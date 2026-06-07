@@ -1,0 +1,3 @@
+disease_name,symptoms,genes,category
+Sample Disease Alpha,Muscle weakness;Seizures;Hearing loss,GENE_A;GENE_B,Test Category
+Sample Disease Beta,Joint pain;Short stature;Vision problems,GENE_B;GENE_C,Test Category

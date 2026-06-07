@@ -1,0 +1,1028 @@
+{
+  "diseases": {
+    "D001": {
+      "name": "Wilson's Disease",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Metabolic",
+      "definition": "User-uploaded disease: Wilson's Disease",
+      "symptoms": [
+        "S001",
+        "S002",
+        "S003",
+        "S004",
+        "S005",
+        "S006",
+        "S007",
+        "S008"
+      ],
+      "genes": [
+        "G001"
+      ],
+      "pathways": []
+    },
+    "D002": {
+      "name": "Menkes Disease",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Metabolic",
+      "definition": "User-uploaded disease: Menkes Disease",
+      "symptoms": [
+        "S009",
+        "S010",
+        "S011",
+        "S012",
+        "S013",
+        "S014",
+        "S015"
+      ],
+      "genes": [
+        "G002"
+      ],
+      "pathways": []
+    },
+    "D003": {
+      "name": "Parkinson's Disease",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Neurological",
+      "definition": "User-uploaded disease: Parkinson's Disease",
+      "symptoms": [
+        "S003",
+        "S016",
+        "S017",
+        "S018",
+        "S019",
+        "S020",
+        "S021",
+        "S022"
+      ],
+      "genes": [
+        "G003",
+        "G004",
+        "G005",
+        "G006",
+        "G007"
+      ],
+      "pathways": []
+    },
+    "D004": {
+      "name": "Huntington's Disease",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Neurological",
+      "definition": "User-uploaded disease: Huntington's Disease",
+      "symptoms": [
+        "S023",
+        "S024",
+        "S025",
+        "S022",
+        "S004",
+        "S026",
+        "S027"
+      ],
+      "genes": [
+        "G008"
+      ],
+      "pathways": []
+    },
+    "D005": {
+      "name": "Friedreich Ataxia",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Neurological",
+      "definition": "User-uploaded disease: Friedreich Ataxia",
+      "symptoms": [
+        "S028",
+        "S004",
+        "S029",
+        "S030",
+        "S031",
+        "S032",
+        "S033"
+      ],
+      "genes": [
+        "G009"
+      ],
+      "pathways": []
+    },
+    "D006": {
+      "name": "Spinocerebellar Ataxia Type 1",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Neurological",
+      "definition": "User-uploaded disease: Spinocerebellar Ataxia Type 1",
+      "symptoms": [
+        "S034",
+        "S004",
+        "S032",
+        "S035",
+        "S024"
+      ],
+      "genes": [
+        "G010"
+      ],
+      "pathways": []
+    },
+    "D007": {
+      "name": "Spinocerebellar Ataxia Type 3",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Neurological",
+      "definition": "User-uploaded disease: Spinocerebellar Ataxia Type 3",
+      "symptoms": [
+        "S028",
+        "S035",
+        "S033",
+        "S036",
+        "S037"
+      ],
+      "genes": [
+        "G011"
+      ],
+      "pathways": []
+    },
+    "D008": {
+      "name": "NBIA (Neurodegeneration with Brain Iron Accumulation)",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Neurological",
+      "definition": "User-uploaded disease: NBIA (Neurodegeneration with Brain Iron Accumulation)",
+      "symptoms": [
+        "S038",
+        "S036",
+        "S039",
+        "S040",
+        "S041",
+        "S024"
+      ],
+      "genes": [
+        "G012",
+        "G013",
+        "G014",
+        "G015"
+      ],
+      "pathways": []
+    },
+    "D009": {
+      "name": "Gaucher Disease",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Lysosomal Storage",
+      "definition": "User-uploaded disease: Gaucher Disease",
+      "symptoms": [
+        "S042",
+        "S043",
+        "S044",
+        "S045",
+        "S046",
+        "S047",
+        "S048"
+      ],
+      "genes": [
+        "G016"
+      ],
+      "pathways": []
+    },
+    "D010": {
+      "name": "Fabry Disease",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Lysosomal Storage",
+      "definition": "User-uploaded disease: Fabry Disease",
+      "symptoms": [
+        "S049",
+        "S050",
+        "S051",
+        "S052",
+        "S029",
+        "S053",
+        "S054"
+      ],
+      "genes": [
+        "G017"
+      ],
+      "pathways": []
+    },
+    "D011": {
+      "name": "Niemann-Pick Disease Type C",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Lysosomal Storage",
+      "definition": "User-uploaded disease: Niemann-Pick Disease Type C",
+      "symptoms": [
+        "S055",
+        "S028",
+        "S036",
+        "S010",
+        "S056",
+        "S057",
+        "S058"
+      ],
+      "genes": [
+        "G018",
+        "G019"
+      ],
+      "pathways": []
+    },
+    "D012": {
+      "name": "Krabbe Disease",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Lysosomal Storage",
+      "definition": "User-uploaded disease: Krabbe Disease",
+      "symptoms": [
+        "S059",
+        "S033",
+        "S040",
+        "S060",
+        "S041",
+        "S010"
+      ],
+      "genes": [
+        "G020"
+      ],
+      "pathways": []
+    },
+    "D013": {
+      "name": "Metachromatic Leukodystrophy",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Lysosomal Storage",
+      "definition": "User-uploaded disease: Metachromatic Leukodystrophy",
+      "symptoms": [
+        "S061",
+        "S033",
+        "S024",
+        "S062",
+        "S040",
+        "S010"
+      ],
+      "genes": [
+        "G021"
+      ],
+      "pathways": []
+    },
+    "D014": {
+      "name": "Pompe Disease",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Lysosomal Storage",
+      "definition": "User-uploaded disease: Pompe Disease",
+      "symptoms": [
+        "S063",
+        "S011",
+        "S064",
+        "S065",
+        "S066",
+        "S043"
+      ],
+      "genes": [
+        "G022"
+      ],
+      "pathways": []
+    },
+    "D015": {
+      "name": "Phenylketonuria",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Amino Acid Metabolism",
+      "definition": "User-uploaded disease: Phenylketonuria",
+      "symptoms": [
+        "S012",
+        "S010",
+        "S067",
+        "S068",
+        "S069",
+        "S070"
+      ],
+      "genes": [
+        "G023"
+      ],
+      "pathways": []
+    },
+    "D016": {
+      "name": "Maple Syrup Urine Disease",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Amino Acid Metabolism",
+      "definition": "User-uploaded disease: Maple Syrup Urine Disease",
+      "symptoms": [
+        "S071",
+        "S072",
+        "S073",
+        "S074",
+        "S010",
+        "S075"
+      ],
+      "genes": [
+        "G024",
+        "G025",
+        "G026"
+      ],
+      "pathways": []
+    },
+    "D017": {
+      "name": "Homocystinuria",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Amino Acid Metabolism",
+      "definition": "User-uploaded disease: Homocystinuria",
+      "symptoms": [
+        "S076",
+        "S012",
+        "S077",
+        "S078",
+        "S079"
+      ],
+      "genes": [
+        "G027",
+        "G028"
+      ],
+      "pathways": []
+    },
+    "D018": {
+      "name": "Tyrosinemia Type 1",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Amino Acid Metabolism",
+      "definition": "User-uploaded disease: Tyrosinemia Type 1",
+      "symptoms": [
+        "S080",
+        "S033",
+        "S081",
+        "S043",
+        "S013"
+      ],
+      "genes": [
+        "G029"
+      ],
+      "pathways": []
+    },
+    "D019": {
+      "name": "Isovaleric Acidemia",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Organic Acidemia",
+      "definition": "User-uploaded disease: Isovaleric Acidemia",
+      "symptoms": [
+        "S082",
+        "S071",
+        "S083",
+        "S073",
+        "S072",
+        "S010"
+      ],
+      "genes": [
+        "G030"
+      ],
+      "pathways": []
+    },
+    "D020": {
+      "name": "Propionic Acidemia",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Organic Acidemia",
+      "definition": "User-uploaded disease: Propionic Acidemia",
+      "symptoms": [
+        "S082",
+        "S071",
+        "S029",
+        "S011",
+        "S073",
+        "S010"
+      ],
+      "genes": [
+        "G031",
+        "G032"
+      ],
+      "pathways": []
+    },
+    "D021": {
+      "name": "Methylmalonic Acidemia",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Organic Acidemia",
+      "definition": "User-uploaded disease: Methylmalonic Acidemia",
+      "symptoms": [
+        "S082",
+        "S071",
+        "S041",
+        "S052",
+        "S084",
+        "S011"
+      ],
+      "genes": [
+        "G033",
+        "G034",
+        "G035"
+      ],
+      "pathways": []
+    },
+    "D022": {
+      "name": "Glutaric Aciduria Type 1",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Organic Acidemia",
+      "definition": "User-uploaded disease: Glutaric Aciduria Type 1",
+      "symptoms": [
+        "S085",
+        "S036",
+        "S086",
+        "S087",
+        "S040"
+      ],
+      "genes": [
+        "G036"
+      ],
+      "pathways": []
+    },
+    "D023": {
+      "name": "Urea Cycle Disorder (OTC Deficiency)",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Urea Cycle",
+      "definition": "User-uploaded disease: Urea Cycle Disorder (OTC Deficiency)",
+      "symptoms": [
+        "S088",
+        "S071",
+        "S089",
+        "S010",
+        "S012",
+        "S062"
+      ],
+      "genes": [
+        "G037"
+      ],
+      "pathways": []
+    },
+    "D024": {
+      "name": "Citrullinemia Type 1",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Urea Cycle",
+      "definition": "User-uploaded disease: Citrullinemia Type 1",
+      "symptoms": [
+        "S088",
+        "S071",
+        "S089",
+        "S012",
+        "S090"
+      ],
+      "genes": [
+        "G038"
+      ],
+      "pathways": []
+    },
+    "D025": {
+      "name": "Biotinidase Deficiency",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Vitamin Metabolism",
+      "definition": "User-uploaded disease: Biotinidase Deficiency",
+      "symptoms": [
+        "S010",
+        "S091",
+        "S092",
+        "S041",
+        "S093",
+        "S082"
+      ],
+      "genes": [
+        "G039"
+      ],
+      "pathways": []
+    },
+    "D026": {
+      "name": "Pyridoxine-Dependent Epilepsy",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Vitamin Metabolism",
+      "definition": "User-uploaded disease: Pyridoxine-Dependent Epilepsy",
+      "symptoms": [
+        "S094",
+        "S012",
+        "S067",
+        "S095"
+      ],
+      "genes": [
+        "G040"
+      ],
+      "pathways": []
+    },
+    "D027": {
+      "name": "Thiamine Metabolism Dysfunction Syndrome",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Vitamin Metabolism",
+      "definition": "User-uploaded disease: Thiamine Metabolism Dysfunction Syndrome",
+      "symptoms": [
+        "S071",
+        "S096",
+        "S097",
+        "S036",
+        "S010"
+      ],
+      "genes": [
+        "G041",
+        "G042"
+      ],
+      "pathways": []
+    },
+    "D028": {
+      "name": "Cerebral Folate Deficiency",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Vitamin Metabolism",
+      "definition": "User-uploaded disease: Cerebral Folate Deficiency",
+      "symptoms": [
+        "S060",
+        "S010",
+        "S098",
+        "S005",
+        "S099"
+      ],
+      "genes": [
+        "G043"
+      ],
+      "pathways": []
+    },
+    "D029": {
+      "name": "Mitochondrial Complex I Deficiency",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Mitochondrial",
+      "definition": "User-uploaded disease: Mitochondrial Complex I Deficiency",
+      "symptoms": [
+        "S100",
+        "S071",
+        "S011",
+        "S029",
+        "S041",
+        "S101"
+      ],
+      "genes": [
+        "G044",
+        "G045",
+        "G046",
+        "G047"
+      ],
+      "pathways": []
+    },
+    "D030": {
+      "name": "MELAS",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Mitochondrial",
+      "definition": "User-uploaded disease: MELAS",
+      "symptoms": [
+        "S084",
+        "S100",
+        "S010",
+        "S102",
+        "S103",
+        "S089",
+        "S104"
+      ],
+      "genes": [
+        "G048",
+        "G049",
+        "G050"
+      ],
+      "pathways": []
+    },
+    "D031": {
+      "name": "MERRF",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Mitochondrial",
+      "definition": "User-uploaded disease: MERRF",
+      "symptoms": [
+        "S105",
+        "S106",
+        "S028",
+        "S104",
+        "S029",
+        "S056"
+      ],
+      "genes": [
+        "G051",
+        "G048"
+      ],
+      "pathways": []
+    },
+    "D032": {
+      "name": "Leigh Syndrome",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Mitochondrial",
+      "definition": "User-uploaded disease: Leigh Syndrome",
+      "symptoms": [
+        "S060",
+        "S011",
+        "S107",
+        "S096",
+        "S100",
+        "S065"
+      ],
+      "genes": [
+        "G052",
+        "G053",
+        "G054",
+        "G055"
+      ],
+      "pathways": []
+    },
+    "D033": {
+      "name": "Alpers Syndrome",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Mitochondrial",
+      "definition": "User-uploaded disease: Alpers Syndrome",
+      "symptoms": [
+        "S108",
+        "S080",
+        "S094",
+        "S109",
+        "S011"
+      ],
+      "genes": [
+        "G056"
+      ],
+      "pathways": []
+    },
+    "D034": {
+      "name": "Sickle Cell Anemia",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Hematological",
+      "definition": "User-uploaded disease: Sickle Cell Anemia",
+      "symptoms": [
+        "S007",
+        "S110",
+        "S042",
+        "S054",
+        "S111",
+        "S112"
+      ],
+      "genes": [
+        "G057"
+      ],
+      "pathways": []
+    },
+    "D035": {
+      "name": "Beta-thalassemia",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Hematological",
+      "definition": "User-uploaded disease: Beta-thalassemia",
+      "symptoms": [
+        "S007",
+        "S042",
+        "S113",
+        "S114",
+        "S115",
+        "S116"
+      ],
+      "genes": [
+        "G057"
+      ],
+      "pathways": []
+    },
+    "D036": {
+      "name": "Hemophilia A",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Hematological",
+      "definition": "User-uploaded disease: Hemophilia A",
+      "symptoms": [
+        "S117",
+        "S118",
+        "S119",
+        "S120",
+        "S121"
+      ],
+      "genes": [
+        "G058"
+      ],
+      "pathways": []
+    },
+    "D037": {
+      "name": "Hemophilia B",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Hematological",
+      "definition": "User-uploaded disease: Hemophilia B",
+      "symptoms": [
+        "S117",
+        "S118",
+        "S120",
+        "S121",
+        "S122"
+      ],
+      "genes": [
+        "G059"
+      ],
+      "pathways": []
+    },
+    "D038": {
+      "name": "Hereditary Spherocytosis",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Hematological",
+      "definition": "User-uploaded disease: Hereditary Spherocytosis",
+      "symptoms": [
+        "S007",
+        "S042",
+        "S116",
+        "S123",
+        "S047"
+      ],
+      "genes": [
+        "G060",
+        "G061",
+        "G062",
+        "G063"
+      ],
+      "pathways": []
+    },
+    "D039": {
+      "name": "Aceruloplasminemia",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Iron Metabolism",
+      "definition": "User-uploaded disease: Aceruloplasminemia",
+      "symptoms": [
+        "S038",
+        "S124",
+        "S125",
+        "S056",
+        "S004",
+        "S028"
+      ],
+      "genes": [
+        "G064"
+      ],
+      "pathways": []
+    },
+    "D040": {
+      "name": "Pantothenate Kinase-Associated Neurodegeneration",
+      "orpha_code": "",
+      "monarch_id": "",
+      "omim_codes": [],
+      "category": "Neurodegeneration",
+      "definition": "User-uploaded disease: Pantothenate Kinase-Associated Neurodegeneration",
+      "symptoms": [
+        "S036",
+        "S039",
+        "S038",
+        "S126",
+        "S024",
+        "S040"
+      ],
+      "genes": [
+        "G012"
+      ],
+      "pathways": []
+    }
+  },
+  "symptoms": {
+    "S001": "Liver disease",
+    "S002": "Kayser-Fleischer rings",
+    "S003": "Tremor",
+    "S004": "Dysarthria",
+    "S005": "Dyskinesia",
+    "S006": "Personality changes",
+    "S007": "Hemolytic anemia",
+    "S008": "Cirrhosis",
+    "S009": "Kinky hair",
+    "S010": "Seizures",
+    "S011": "Hypotonia",
+    "S012": "Intellectual disability",
+    "S013": "Failure to thrive",
+    "S014": "Hypothermia",
+    "S015": "Vascular tortuosity",
+    "S016": "Bradykinesia",
+    "S017": "Rigidity",
+    "S018": "Postural instability",
+    "S019": "Micrographia",
+    "S020": "Anosmia",
+    "S021": "Depression",
+    "S022": "Dysphagia",
+    "S023": "Chorea",
+    "S024": "Cognitive decline",
+    "S025": "Psychiatric disturbances",
+    "S026": "Gait abnormality",
+    "S027": "Weight loss",
+    "S028": "Ataxia",
+    "S029": "Cardiomyopathy",
+    "S030": "Scoliosis",
+    "S031": "Pes cavus",
+    "S032": "Nystagmus",
+    "S033": "Peripheral neuropathy",
+    "S034": "Cerebellar ataxia",
+    "S035": "Pyramidal signs",
+    "S036": "Dystonia",
+    "S037": "Ophthalmoplegia",
+    "S038": "Iron accumulation",
+    "S039": "Parkinsonism",
+    "S040": "Spasticity",
+    "S041": "Optic atrophy",
+    "S042": "Splenomegaly",
+    "S043": "Hepatomegaly",
+    "S044": "Bone pain",
+    "S045": "Thrombocytopenia",
+    "S046": "Anemia",
+    "S047": "Fatigue",
+    "S048": "Pathological fractures",
+    "S049": "Acroparesthesias",
+    "S050": "Angiokeratomas",
+    "S051": "Corneal opacity",
+    "S052": "Renal failure",
+    "S053": "Hypohidrosis",
+    "S054": "Stroke",
+    "S055": "Vertical supranuclear gaze palsy",
+    "S056": "Dementia",
+    "S057": "Hepatosplenomegaly",
+    "S058": "Cataplexy",
+    "S059": "Irritability",
+    "S060": "Developmental regression",
+    "S061": "Gait disturbance",
+    "S062": "Behavioral changes",
+    "S063": "Muscle weakness",
+    "S064": "Cardiomegaly",
+    "S065": "Respiratory failure",
+    "S066": "Feeding difficulties",
+    "S067": "Behavioral problems",
+    "S068": "Eczema",
+    "S069": "Hypopigmentation",
+    "S070": "Mousy odor",
+    "S071": "Encephalopathy",
+    "S072": "Lethargy",
+    "S073": "Poor feeding",
+    "S074": "Maple syrup odor",
+    "S075": "Respiratory distress",
+    "S076": "Lens dislocation",
+    "S077": "Osteoporosis",
+    "S078": "Thromboembolism",
+    "S079": "Marfanoid habitus",
+    "S080": "Liver failure",
+    "S081": "Renal tubular dysfunction",
+    "S082": "Metabolic acidosis",
+    "S083": "Sweaty feet odor",
+    "S084": "Stroke-like episodes",
+    "S085": "Macrocephaly",
+    "S086": "Striatal injury",
+    "S087": "Encephalopathic crises",
+    "S088": "Hyperammonemia",
+    "S089": "Vomiting",
+    "S090": "Liver dysfunction",
+    "S091": "Skin rash",
+    "S092": "Alopecia",
+    "S093": "Hearing loss",
+    "S094": "Refractory seizures",
+    "S095": "Developmental delay",
+    "S096": "Basal ganglia lesions",
+    "S097": "Respiratory insufficiency",
+    "S098": "Spastic paraplegia",
+    "S099": "Autism-like behavior",
+    "S100": "Lactic acidosis",
+    "S101": "Leigh syndrome",
+    "S102": "Myopathy",
+    "S103": "Headache",
+    "S104": "Deafness",
+    "S105": "Myoclonic epilepsy",
+    "S106": "Ragged red fibers",
+    "S107": "Brainstem dysfunction",
+    "S108": "Progressive encephalopathy",
+    "S109": "Cortical blindness",
+    "S110": "Vaso-occlusive crises",
+    "S111": "Acute chest syndrome",
+    "S112": "Infection susceptibility",
+    "S113": "Bone deformities",
+    "S114": "Growth retardation",
+    "S115": "Iron overload",
+    "S116": "Jaundice",
+    "S117": "Bleeding tendency",
+    "S118": "Hemarthrosis",
+    "S119": "Muscle hematomas",
+    "S120": "Prolonged bleeding",
+    "S121": "Intracranial hemorrhage",
+    "S122": "Epistaxis",
+    "S123": "Gallstones",
+    "S124": "Retinal degeneration",
+    "S125": "Diabetes",
+    "S126": "Retinopathy"
+  },
+  "genes": {
+    "G001": "ATP7B",
+    "G002": "ATP7A",
+    "G003": "LRRK2",
+    "G004": "SNCA",
+    "G005": "PARK7",
+    "G006": "PINK1",
+    "G007": "PRKN",
+    "G008": "HTT",
+    "G009": "FXN",
+    "G010": "ATXN1",
+    "G011": "ATXN3",
+    "G012": "PANK2",
+    "G013": "PLA2G6",
+    "G014": "FA2H",
+    "G015": "ATP13A2",
+    "G016": "GBA",
+    "G017": "GLA",
+    "G018": "NPC1",
+    "G019": "NPC2",
+    "G020": "GALC",
+    "G021": "ARSA",
+    "G022": "GAA",
+    "G023": "PAH",
+    "G024": "BCKDHA",
+    "G025": "BCKDHB",
+    "G026": "DBT",
+    "G027": "CBS",
+    "G028": "MTHFR",
+    "G029": "FAH",
+    "G030": "IVD",
+    "G031": "PCCA",
+    "G032": "PCCB",
+    "G033": "MUT",
+    "G034": "MMAA",
+    "G035": "MMAB",
+    "G036": "GCDH",
+    "G037": "OTC",
+    "G038": "ASS1",
+    "G039": "BTD",
+    "G040": "ALDH7A1",
+    "G041": "SLC19A3",
+    "G042": "TPK1",
+    "G043": "FOLR1",
+    "G044": "NDUFV1",
+    "G045": "NDUFS1",
+    "G046": "NDUFS4",
+    "G047": "NDUFAF2",
+    "G048": "MT-TL1",
+    "G049": "MT-ND1",
+    "G050": "MT-ND5",
+    "G051": "MT-TK",
+    "G052": "SURF1",
+    "G053": "SCO2",
+    "G054": "MT-ATP6",
+    "G055": "SDHA",
+    "G056": "POLG",
+    "G057": "HBB",
+    "G058": "F8",
+    "G059": "F9",
+    "G060": "ANK1",
+    "G061": "SPTB",
+    "G062": "SLC4A1",
+    "G063": "EPB42",
+    "G064": "CP"
+  },
+  "pathways": {},
+  "meta": {
+    "n_diseases": 40,
+    "n_symptoms": 126,
+    "n_genes": 64
+  }
+}

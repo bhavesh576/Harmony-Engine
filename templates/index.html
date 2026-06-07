@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Harmony Engine</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- ═══ HEADER ═══ -->
+    <header id="header">
+        <div class="header-content">
+            <div class="title-block">
+                <h1>The Harmony Engine</h1>
+                <p class="subtitle">Finding undiscovered truth by measuring structural beauty</p>
+            </div>
+            <div class="stats-bar" id="stats-bar">
+                <span class="stat"><span class="stat-num" id="stat-diseases">—</span> diseases</span>
+                <span class="stat"><span class="stat-num" id="stat-genes">—</span> genes</span>
+                <span class="stat"><span class="stat-num" id="stat-symptoms">—</span> symptoms</span>
+                <span class="stat"><span class="stat-num" id="stat-discoveries">—</span> discoveries</span>
+                <div class="source-toggle">
+                    <span class="toggle-label" id="source-label">API Data</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="apiToggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <button id="btn-upload" class="header-btn" title="Upload CSV dataset">📄 Upload</button>
+                <button id="btn-report" class="header-btn" title="Download discovery report">📥 Report</button>
+                <button id="btn-copy-ai" class="header-btn" title="Copy report for AI analysis">📋 Copy for AI</button>
+                <button id="btn-settings" class="header-btn" title="Settings (API key, data)">⚙ Settings</button>
+                <button id="btn-reload-graph" class="header-btn" title="Reload graph from scratch">🔄</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══ MAIN LAYOUT ═══ -->
+    <main id="main">
+        <!-- LEFT: Graph Visualization -->
+        <section id="graph-panel">
+            <div class="panel-header">
+                <h2>Knowledge Graph</h2>
+                <div class="graph-controls">
+                    <select id="focus-select">
+                        <option value="">All Diseases</option>
+                    </select>
+                    <button id="btn-reset" title="Reset view">⟲</button>
+                </div>
+            </div>
+            <div id="graph-container">
+                <svg id="graph-svg"></svg>
+                <div class="zoom-controls" id="zoom-controls">
+                    <button id="btn-zoom-in" title="Zoom in (+)">＋</button>
+                    <div class="zoom-level" id="zoom-level">100%</div>
+                    <button id="btn-zoom-out" title="Zoom out (−)">−</button>
+                    <div class="zoom-divider"></div>
+                    <button id="btn-fit" title="Fit to view (F)">⊞</button>
+                    <button id="btn-reset-zoom" title="Reset zoom (R)">⟲</button>
+                </div>
+                <div class="graph-options" id="graph-options">
+                    <button id="btn-fullscreen" title="Fullscreen (Esc to exit)">⛶</button>
+                    <button id="btn-pause-sim" title="Pause/Resume simulation (P)">⏸</button>
+                    <button id="btn-show-labels" title="Toggle labels (L)" class="active">Aa</button>
+                    <button id="btn-show-predicted" title="Toggle predicted edges (E)" class="active">◇</button>
+                </div>
+                <div class="shortcut-hint">
+                    <kbd>Scroll</kbd> zoom · <kbd>Drag</kbd> pan · <kbd>Click</kbd> focus disease
+                </div>
+            </div>
+            <div id="graph-legend">
+                <span class="legend-item"><span class="dot disease"></span> Disease</span>
+                <span class="legend-item"><span class="dot symptom"></span> Symptom</span>
+                <span class="legend-item"><span class="dot gene"></span> Gene</span>
+                <span class="legend-item"><span class="dot pathway"></span> Pathway</span>
+                <span class="legend-item"><span class="line predicted"></span> Predicted</span>
+                <button id="btn-analysis" class="header-btn" title="Show analysis panel">📊 Analysis</button>
+            </div>
+
+            <!-- ═══ ANALYSIS PANEL (collapsible) ═══ -->
+            <div id="analysis-panel" class="analysis-panel collapsed">
+                <div class="analysis-tabs">
+                    <button class="analysis-tab active" data-tab="score-table">📋 Score Table</button>
+                    <button class="analysis-tab" data-tab="single-disease">🧬 Single Disease</button>
+                    <button class="analysis-tab" data-tab="metric-summary">📊 Metric Summary</button>
+                </div>
+                <div class="analysis-content">
+                    <div id="tab-score-table" class="tab-pane active"></div>
+                    <div id="tab-single-disease" class="tab-pane" style="display:none;"></div>
+                    <div id="tab-metric-summary" class="tab-pane" style="display:none;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT: Discovery Panel -->
+        <section id="discovery-panel">
+            <div class="panel-header">
+                <h2>Discoveries</h2>
+                <div class="discovery-controls">
+                    <select id="metric-filter">
+                        <option value="">All Metrics</option>
+                        <option value="sds">Symmetry Defect</option>
+                        <option value="hds">Harmonic Dissonance</option>
+                        <option value="cis">Compositional Gap</option>
+                        <option value="crs">Curvature Defect</option>
+                    </select>
+                    <label class="novel-toggle" title="Show only discoveries with zero published papers">
+                        <input type="checkbox" id="novel-filter">
+                        <span class="novel-label">🔬 Novel Only</span>
+                    </label>
+                </div>
+            </div>
+            <div id="discovery-list"></div>
+        </section>
+    </main>
+
+    <!-- ═══ DETAIL MODAL ═══ -->
+    <div id="modal-overlay" class="hidden">
+        <div id="modal">
+            <button id="modal-close">✕</button>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- ═══ LOADING ═══ -->
+    <div id="loading">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p id="loading-text">Initializing The Harmony Engine...</p>
+        </div>
+    </div>
+
+    <!-- ═══ AI CHAT PANEL ═══ -->
+    <div id="chat-panel" class="chat-collapsed">
+        <button id="chat-toggle" title="AI Assistant (C)">
+            <span class="chat-icon">💬</span>
+            <span class="chat-label">Ask AI</span>
+        </button>
+        <div id="chat-body">
+            <div class="chat-header">
+                <span class="chat-title">🔬 Harmony AI</span>
+                <div class="chat-header-actions">
+                    <button id="chat-settings-btn" title="Settings">⚙</button>
+                    <button id="chat-minimize" title="Minimize">−</button>
+                </div>
+            </div>
+            <div id="chat-messages">
+                <div class="chat-msg bot">
+                    <div class="chat-msg-text">
+                        Hi! I'm the Harmony Engine AI assistant. Ask me about
+                        diseases, discoveries, or how the harmony metrics work.
+                        <br><br>
+                        <em>Configure your API key in Settings (⚙) first.</em>
+                    </div>
+                </div>
+            </div>
+            <div id="chat-input-area">
+                <textarea id="chat-input" placeholder="Ask about a discovery..." rows="2"></textarea>
+                <button id="chat-send" title="Send">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ SETTINGS MODAL ═══ -->
+    <div id="settings-overlay" class="hidden">
+        <div id="settings-modal">
+            <button id="settings-close">✕</button>
+            <h3 class="settings-title">⚙ Settings</h3>
+
+            <div class="settings-section">
+                <h4>AI Provider</h4>
+                <div class="settings-grid">
+                    <label class="provider-option">
+                        <input type="radio" name="ai-provider" value="anthropic" checked>
+                        <span class="provider-label">Anthropic Claude</span>
+                        <span class="provider-hint">claude-sonnet-4-20250514</span>
+                    </label>
+                    <label class="provider-option">
+                        <input type="radio" name="ai-provider" value="openai">
+                        <span class="provider-label">OpenAI ChatGPT</span>
+                        <span class="provider-hint">gpt-4o-mini</span>
+                    </label>
+                    <label class="provider-option">
+                        <input type="radio" name="ai-provider" value="together">
+                        <span class="provider-label">Together AI</span>
+                        <span class="provider-hint">Llama 3, Mistral, Qwen</span>
+                    </label>
+                    <label class="provider-option">
+                        <input type="radio" name="ai-provider" value="groq">
+                        <span class="provider-label">Groq</span>
+                        <span class="provider-hint">Fast Llama, Mixtral</span>
+                    </label>
+                    <label class="provider-option">
+                        <input type="radio" name="ai-provider" value="openrouter">
+                        <span class="provider-label">OpenRouter</span>
+                        <span class="provider-hint">100+ models, one key</span>
+                    </label>
+                    <label class="provider-option">
+                        <input type="radio" name="ai-provider" value="custom">
+                        <span class="provider-label">Custom Endpoint</span>
+                        <span class="provider-hint">Ollama, LM Studio, etc.</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-section" id="settings-model-section">
+                <h4>Model Name</h4>
+                <input type="text" id="settings-model"
+                       placeholder="e.g. meta-llama/Llama-3-70b-chat-hf"
+                       class="settings-input">
+                <p class="settings-hint" id="settings-model-hint">
+                    Leave blank for default model.
+                </p>
+            </div>
+
+            <div class="settings-section" id="settings-endpoint-section" style="display:none;">
+                <h4>Custom API Endpoint</h4>
+                <input type="text" id="settings-endpoint"
+                       placeholder="http://localhost:11434/v1/chat/completions"
+                       class="settings-input">
+                <p class="settings-hint">
+                    Full URL for OpenAI-compatible endpoints (Ollama, LM Studio, vLLM, etc.)
+                </p>
+            </div>
+
+            <div class="settings-section">
+                <h4>API Key</h4>
+                <input type="password" id="settings-api-key"
+                       placeholder="Enter your API key..."
+                       class="settings-input">
+                <p class="settings-hint" id="settings-key-hint">
+                    Stored in your browser's localStorage only. Never sent to our server.
+                </p>
+            </div>
+
+            <div class="settings-section">
+                <h4>Data Management</h4>
+                <div class="settings-row">
+                    <button id="btn-upload-csv" class="settings-btn">
+                        📄 Stage CSV Dataset
+                    </button>
+                    <input type="file" id="csv-file-input" accept=".csv" multiple style="display:none">
+                </div>
+                <p class="settings-hint">
+                    CSV columns: disease_name, symptoms (semicolon-separated),
+                    genes (semicolon-separated), category (optional)
+                </p>
+
+                <div id="pending-uploads" style="display:none;">
+                    <h4 style="margin-top:12px;">Pending Uploads</h4>
+                    <div id="pending-list"></div>
+                    <button id="btn-recompute" class="settings-btn recompute-btn">
+                        ⚡ Recompute Discoveries
+                    </button>
+                </div>
+
+                <div class="settings-row" style="margin-top: 12px;">
+                    <button id="btn-enrich-genes" class="settings-btn">
+                        🧬 Enrich Gene Data
+                    </button>
+                </div>
+                <p class="settings-hint">
+                    Fetches more gene-disease associations from Monarch Initiative (free, no key needed).
+                </p>
+                <div class="settings-row" style="margin-top: 12px;">
+                    <button id="btn-reset-data" class="settings-btn reset-btn">
+                        🔄 Reset to Original
+                    </button>
+                </div>
+                <p class="settings-hint">
+                    Removes all uploaded datasets and restores original Orphanet + Monarch data.
+                </p>
+                <div class="settings-row" style="margin-top: 12px;">
+                    <label class="novel-toggle">
+                        <input type="checkbox" id="lite-mode-toggle">
+                        <span class="novel-label">⚡ Lite Mode (faster on slow devices)</span>
+                    </label>
+                </div>
+                <p class="settings-hint">
+                    Shows only disease nodes and predicted edges. Much faster on slow laptops.
+                </p>
+            </div>
+
+            <div id="settings-status" class="settings-status"></div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
