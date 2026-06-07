@@ -22,7 +22,6 @@ Given a body of knowledge represented as a network, it measures where harmony an
 - [Data Source Toggle (API vs CSV Only)](#data-source-toggle-api-vs-csv-only)
 - [Lite Mode (Slow Devices)](#lite-mode-slow-devices)
 - [Export Report](#export-report)
-- [Analysis Panel](#analysis-panel)
 - [AI Chatbot](#ai-chatbot)
 - [Dataset Upload](#dataset-upload)
 - [Gene Enrichment](#gene-enrichment)
@@ -243,15 +242,15 @@ c:\Users\dell\Desktop\uuu\
 
 | File | Lines | Purpose |
 |------|-------|---------|
-| `app.py` | ~1,100 | Flask server. REST API endpoints for discoveries, graph data, AI chat, CSV upload, gene enrichment, reset, source toggle, export report, lite mode. Session data isolation and size limits. |
+| `app.py` | ~1,200 | Flask server. REST API endpoints for discoveries, graph data, AI chat, CSV upload, gene enrichment, reset, source toggle, export report with NetworkX metrics, lite mode. Session data isolation and size limits. |
 | `build_kb.py` | 825 | Data pipeline. Fetches diseases from Orphanet, symptoms + genes from Monarch, caches to JSON. Handles rate limiting and error recovery. |
 | `knowledge_graph.py` | 230 | Builds multi-layer NetworkX graph. 4 node types, 6 edge types. Adjacency matrices, subgraph extraction, neighbor lookups. |
 | `harmony_engine.py` | 541 | Core engine. SDS, HDS, CIS, CRS metrics. Composite scoring. Per-node harmony profiles. Spectral analysis via graph Laplacian. |
 | `rare_disease_kb.py` | 143 | Loads `cache/real_kb.json`. Exposes DISEASES, SYMPTOMS, GENES, PATHWAYS dicts. Entity name/type lookups. Re-initializable for reset. |
 | `discovery.py` | 320 | Pipeline orchestration. Ranks discoveries. Generates plain-language explanations. Held-out edge validation. |
 | `static/style.css` | ~1,500 | Dark theme CSS. Chat panel, settings modal, floating controls, discovery cards, responsive layout, fullscreen mode, source toggle, notification toast, analysis panel. |
-| `static/app.js` | ~1,600 | D3.js force-directed graph with zoom/pan, AI chatbot, settings management, CSV upload workflow, gene enrichment, graph destruction/reinitialization, keyboard shortcuts, source toggle, report export, analysis panel tabs, lite mode. |
-| `templates/index.html` | ~290 | HTML template. Header with stats and toggle, graph panel with controls, analysis panel with 3 tabs, discovery panel, AI chat panel, settings modal with lite mode, loading overlay. |
+| `static/app.js` | ~1,200 | D3.js force-directed graph with zoom/pan, AI chatbot, settings management, CSV upload workflow, gene enrichment, graph destruction/reinitialization, keyboard shortcuts, source toggle, report export, lite mode. |
+| `templates/index.html` | ~270 | HTML template. Header with stats and toggle, graph panel with controls, discovery panel, AI chat panel, settings modal with lite mode, loading overlay. |
 
 ---
 
@@ -344,38 +343,39 @@ The header bar includes a toggle switch to switch between two modes:
 
 ---
 
-## Lite Mode (Slow Devices)
+## Lite Mode (Always On)
 
-For slow laptops, Lite Mode reduces the graph to only disease nodes and predicted edges.
+The graph always runs in Lite Mode to protect slow laptops (i5-5300U, 8GB RAM).
 
-### What Changes
+### What's Shown
 
-| | Normal Mode | Lite Mode |
-|---|---|---|
-| **Nodes** | 1,800+ (diseases, symptoms, genes, pathways) | ~100 (diseases only) |
-| **Edges** | 6,500+ (all types) | 0 solid + predicted only |
-| **Performance** | Full | Much faster |
+| Element | Count | Description |
+|---------|-------|-------------|
+| **Disease nodes** | ~50-100 | Gold dots, one per disease |
+| **Predicted edges** | ~30 | Golden dashed lines between diseases |
+| **Symptom/Gene/Pathway nodes** | 0 | Hidden to save memory |
+| **Knowledge edges** | 0 | Hidden to save memory |
 
-### How to Enable
+This reduces graph nodes from 1,800+ to ~50, making D3.js rendering fast even on slow devices.
 
-1. Click **⚙ Settings**
-2. Check **⚡ Lite Mode (faster on slow devices)**
-3. Graph reloads automatically
+### Configuration
 
-The preference is saved in browser localStorage and persists across sessions.
+In `app.py`:
+```python
+MAX_DISEASES = 50       # Max diseases in memory
+MAX_CSV_DISEASES = 40   # Max diseases from a single CSV
+LITE_MODE = True        # Always lite (disease nodes only)
+```
 
 ---
 
 ## Export Report
 
-Generate a plain-text report of discoveries for offline reading or AI analysis.
+Generate a dense, AI-optimized plain-text report with all discoveries, network metrics, and link prediction scores.
 
 ### Download Report
 
-Click **📥 Report** in the header bar. A `.txt` file downloads with:
-- Dataset summary (diseases, genes, symptoms)
-- Top 20 discoveries with scores and explanations
-- A pre-formatted section for pasting into ChatGPT or Gemini
+Click **📥 Report** in the header bar. A `.txt` file downloads with the full dataset.
 
 ### Copy for AI
 
@@ -383,61 +383,64 @@ Click **📋 Copy for AI** in the header bar. The report is copied to your clipb
 
 ### Report Contents
 
+The report uses a dense machine-readable format optimized for AI consumption:
+
 ```
 ========================================================
-THE HARMONY ENGINE — DISCOVERY REPORT
+HARMONY_ENGINE_REPORT
 ========================================================
-Generated: 2026-06-07 21:33:17
-Mode: API Data
-Dataset: 100 diseases | 406 genes | 1290 symptoms
-Total predictions analyzed: 50
-Novel discoveries (0 papers found): 12
+TS:2026-06-07 23:28:49
+DATASET: D=100 G=406 S=1290
+TOTAL_PREDICTIONS:152
+NOVEL_COUNT:13
+WEIGHTS: SDS=0.30 HDS=0.25 CIS=0.30 CRS=0.15
 ========================================================
-
-TOP DISCOVERIES:
---------------------------------------------------------
-#1. Sickle cell anemia ↔ Beta-thalassemia
-Composite Score: 0.300
-Novel: NO (726 papers in PubMed)
-Metrics: SDS=1.00 | HDS=0.00 | CIS=0.00 | CRS=0.00
-Explanation: Think of it like this...
---------------------------------------------------------
+DISEASE_NODES:
+D01|Fabry disease|Rare disease|1|30
+D02|Gaucher disease|Rare disease|2|30
 ...
-
 ========================================================
-FOR AI ANALYSIS — PASTE INTO CHATGPT OR GEMINI:
+EDGE_LIST (known connections):
+D01|D07|0.2500
+...
 ========================================================
-I have analyzed a medical knowledge graph of 100 rare diseases...
+DISCOVERIES:
+RANK:1|SCORE:0.3000|NOVEL:NO|PAPERS:726
+D1:Sickle cell anemia
+D2:Beta-thalassemia
+SDS:1.0000|HDS:0.0000|CIS:0.0000|CRS:0.0000
+GENE_JACCARD:0.5000|COMMON_N:5
+ADAMIC_ADAR:2.8003|RESOURCE_ALLOC:0.8218
+SHARED_GENES:HBB
+SHARED_SYMPTOMS:Osteolysis,Esophageal stenosis,...
+PRIMARY_SIGNAL:SDS
+---
+...
+========================================================
+SCORE_DISTRIBUTION:
+HIGH(>0.4):0|MED(0.2-0.4):5|LOW(<0.2):147
+SDS_PRIMARY:152|HDS_PRIMARY:0
+CIS_PRIMARY:0|CRS_PRIMARY:0
+========================================================
+AI_PROMPT:
+You are a biomedical researcher...
+========================================================
 ```
 
----
+### Metrics Included Per Discovery
 
-## Analysis Panel
-
-Below the graph legend, click **📊 Analysis** to expand a collapsible panel with three tabs:
-
-### Tab 1: 📋 Score Table
-
-HTML table showing the top 50 discoveries:
-- Rank, Disease 1, Disease 2, Score, Novel status, Paper count
-- **⬇ Download as CSV** button to export the table
-
-### Tab 2: 🧬 Single Disease
-
-Dropdown to select any disease. Shows:
-- Known connections (linked diseases)
-- Predicted connections (with scores)
-- Genes and symptoms
-- Data from `/api/disease/{id}` and `/api/discoveries/{id}`
-
-### Tab 3: 📊 Metric Summary
-
-Text summary of each harmony metric:
-- How many primary signals each metric found
-- Top discovery per metric
-- Total novel discoveries (0 papers)
-
-All tabs use pure HTML — no D3.js, lightweight and fast.
+| Metric | Description |
+|--------|-------------|
+| **SDS/HDS/CIS/CRS** | The four harmony metrics (0-1 scale) |
+| **GENE_JACCARD** | Jaccard similarity of gene sets between two diseases |
+| **COMMON_N** | Number of common neighbors in the disease graph |
+| **ADAMIC_ADAR** | Link prediction score weighted by neighbor degree |
+| **RESOURCE_ALLOC** | Link prediction score based on resource allocation |
+| **SHARED_GENES** | Gene names shared between the two diseases |
+| **SHARED_SYMPTOMS** | Symptom names shared (max 5 shown) |
+| **PRIMARY_SIGNAL** | Which harmony metric contributed most |
+| **PATH_LENGTH** | Shortest path in the graph (NOVEL discoveries only) |
+| **PATH** | Node names along the shortest path (max 4 nodes) |
 
 ---
 
@@ -862,11 +865,18 @@ Switch between API data and CSV-only mode.
 
 ### GET `/api/export-report`
 
-Generates and downloads a plain-text discovery report.
+Generates and downloads a dense, AI-optimized plain-text discovery report.
 
 **Response:** `text/plain` with `Content-Disposition: attachment; filename=harmony_report.txt`
 
-Contains: dataset summary, top 20 discoveries with explanations, and a pre-formatted section for AI analysis.
+Contains:
+- Disease node list (ID, name, category, gene count, symptom count)
+- Known disease-disease edges with Jaccard similarity
+- All discoveries with SDS/HDS/CIS/CRS + GENE_JACCARD + COMMON_N + ADAMIC_ADAR + RESOURCE_ALLOC
+- Shared genes and symptoms per discovery
+- Shortest path for NOVEL discoveries only
+- Score distribution summary
+- AI prompt section for ChatGPT/Gemini
 
 ### POST `/api/lite-mode`
 
@@ -899,7 +909,7 @@ Toggle lite mode for the graph (disease nodes + predicted edges only).
 | **📄 Upload** | Open settings modal for CSV upload |
 | **📥 Report** | Download discovery report as `.txt` file |
 | **📋 Copy for AI** | Copy report to clipboard for ChatGPT/Gemini |
-| **⚙ Settings** | Open settings for AI provider, API key, data management, lite mode |
+| **⚙ Settings** | Open settings for AI provider, API key, data management |
 | **🔄** | Destroy and reinitialize the graph from scratch (full SVG rebuild) |
 | **Diseases count** | Auto-updated from `/api/stats` on load and after reset |
 | **Genes count** | Auto-updated from `/api/stats` on load and after reset |
@@ -912,7 +922,6 @@ Toggle lite mode for the graph (disease nodes + predicted edges only).
 |---------|--------|
 | **Disease Focus** dropdown | Focus graph on a specific disease (2-hop subgraph) |
 | **⟲** (top-right) | Destroy and reinitialize the graph completely |
-| **📊 Analysis** (in legend) | Toggle collapsible analysis panel with Score Table, Single Disease, Metric Summary tabs |
 
 ### Zoom Controls (bottom-left of graph)
 
@@ -1008,7 +1017,20 @@ Each discovery is checked against PubMed for existing published papers:
 - **Novelty score**: `1 / (1 + paper_count)` — 1.0 means zero papers, approaches 0 as papers increase
 - Discoveries with 0 papers are flagged as **🔬 NOVEL**
 
-### Step 6: Validation
+### Step 6: Link Prediction Metrics (Report Only)
+
+The export report includes four additional NetworkX link prediction metrics for each discovery:
+- **Gene Jaccard**: Jaccard similarity of gene sets between two diseases
+- **Common Neighbors**: Number of shared disease connections in the graph
+- **Adamic-Adar Index**: Link prediction score weighted by neighbor degree (log scale)
+- **Resource Allocation Index**: Link prediction score based on resource transfer
+
+For NOVEL discoveries, the report also includes:
+- **Shortest Path**: Path length and node names connecting the two diseases
+
+These are microsecond calculations on the ~50-node disease graph. Zero compute cost on the main pipeline.
+
+### Step 7: Validation
 
 The engine validates itself by:
 1. Holding out 20% of known disease-disease similarity edges

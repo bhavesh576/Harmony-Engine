@@ -20,16 +20,19 @@
                 <span class="stat"><span class="stat-num" id="stat-genes">—</span> genes</span>
                 <span class="stat"><span class="stat-num" id="stat-symptoms">—</span> symptoms</span>
                 <span class="stat"><span class="stat-num" id="stat-discoveries">—</span> discoveries</span>
-                <div class="source-toggle">
-                    <span class="toggle-label" id="source-label">API Data</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="apiToggle" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.8rem;color:#8b949e;">
+                    <span id="source-label">API Data</span>
+                    <div id="sourceToggle"
+                      onclick="toggleSource()"
+                      style="width:40px;height:22px;background:#d4af37;border-radius:11px;position:relative;cursor:pointer;transition:background 0.3s;">
+                        <div id="toggleKnob"
+                          style="width:18px;height:18px;background:white;border-radius:50%;position:absolute;top:2px;left:20px;transition:left 0.3s;">
+                        </div>
+                    </div>
+                </label>
                 <button id="btn-upload" class="header-btn" title="Upload CSV dataset">📄 Upload</button>
-                <button id="btn-report" class="header-btn" title="Download discovery report">📥 Report</button>
-                <button id="btn-copy-ai" class="header-btn" title="Copy report for AI analysis">📋 Copy for AI</button>
+                <button onclick="downloadReport()" class="header-btn" title="Download discovery report">📥 Report</button>
+                <button onclick="copyForAI()" class="header-btn" title="Copy report for AI analysis">📋 Copy for AI</button>
                 <button id="btn-settings" class="header-btn" title="Settings (API key, data)">⚙ Settings</button>
                 <button id="btn-reload-graph" class="header-btn" title="Reload graph from scratch">🔄</button>
             </div>
@@ -71,25 +74,7 @@
             </div>
             <div id="graph-legend">
                 <span class="legend-item"><span class="dot disease"></span> Disease</span>
-                <span class="legend-item"><span class="dot symptom"></span> Symptom</span>
-                <span class="legend-item"><span class="dot gene"></span> Gene</span>
-                <span class="legend-item"><span class="dot pathway"></span> Pathway</span>
                 <span class="legend-item"><span class="line predicted"></span> Predicted</span>
-                <button id="btn-analysis" class="header-btn" title="Show analysis panel">📊 Analysis</button>
-            </div>
-
-            <!-- ═══ ANALYSIS PANEL (collapsible) ═══ -->
-            <div id="analysis-panel" class="analysis-panel collapsed">
-                <div class="analysis-tabs">
-                    <button class="analysis-tab active" data-tab="score-table">📋 Score Table</button>
-                    <button class="analysis-tab" data-tab="single-disease">🧬 Single Disease</button>
-                    <button class="analysis-tab" data-tab="metric-summary">📊 Metric Summary</button>
-                </div>
-                <div class="analysis-content">
-                    <div id="tab-score-table" class="tab-pane active"></div>
-                    <div id="tab-single-disease" class="tab-pane" style="display:none;"></div>
-                    <div id="tab-metric-summary" class="tab-pane" style="display:none;"></div>
-                </div>
             </div>
         </section>
 

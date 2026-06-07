@@ -209,11 +209,6 @@ const App = {
             apiToggle.addEventListener("change", (e) => this._toggleSource(e.target.checked));
         }
 
-        // ── Analysis Panel ──
-        this._bind("btn-analysis", "click", () => this._toggleAnalysis());
-        document.querySelectorAll(".analysis-tab").forEach(tab => {
-            tab.addEventListener("click", (e) => this._switchTab(e.target.dataset.tab));
-        });
 
         // ── Keyboard Shortcuts ──
         document.addEventListener("keydown", (e) => {
@@ -327,19 +322,17 @@ const App = {
 
         const visibleNodes = data.nodes.filter(n => connectedNodes.has(n.id));
 
-        // Create simulation with performance optimization
+        // Create simulation — lightweight for slow laptops
         this.simulation = d3.forceSimulation(visibleNodes)
             .force("link", d3.forceLink(allEdges)
                 .id(d => d.id)
                 .distance(d => d.isPredicted ? 100 : 60)
                 .strength(d => d.isPredicted ? 0.1 : 0.3))
             .force("charge", d3.forceManyBody()
-                .strength(d => d.type === "disease" ? -100 : -30))
+                .strength(-100))
             .force("center", d3.forceCenter(width / 2, height / 2))
-            .force("collision", d3.forceCollide()
-                .radius(d => d.radius + 2))
-            .alphaDecay(0.03)     // Faster cooling
-            .velocityDecay(0.4);  // More friction
+            .alphaDecay(0.05)     // Fast settling
+            .velocityDecay(0.6);  // High friction, stops quickly
 
         // Freeze simulation completely after 5 seconds
         this._simFreezeTimer = setTimeout(() => {
@@ -616,129 +609,6 @@ const App = {
         } catch (e) {
             alert("Failed to copy: " + e.message);
         }
-    },
-
-    // ── Analysis Panel ────────────────────────────────────────────────
-
-    _toggleAnalysis() {
-        const panel = document.getElementById("analysis-panel");
-        if (!panel) return;
-        const collapsed = panel.classList.contains("collapsed");
-        panel.classList.toggle("collapsed");
-        if (collapsed) {
-            // Loading content on first open
-            this._loadAnalysisTab("score-table");
-        }
-    },
-
-    _switchTab(tabId) {
-        document.querySelectorAll(".analysis-tab").forEach(t => t.classList.remove("active"));
-        document.querySelectorAll(".tab-pane").forEach(p => { p.style.display = "none"; p.classList.remove("active"); });
-        document.querySelector(`[data-tab="${tabId}"]`)?.classList.add("active");
-        const pane = document.getElementById(`tab-${tabId}`);
-        if (pane) { pane.style.display = "block"; pane.classList.add("active"); }
-        this._loadAnalysisTab(tabId);
-    },
-
-    async _loadAnalysisTab(tabId) {
-        const pane = document.getElementById(`tab-${tabId}`);
-        if (!pane || pane.dataset.loaded === "true") return;
-
-        if (tabId === "score-table") {
-            pane.innerHTML = "<p style='color:#8b949e;padding:12px;'>Loading...</p>";
-            const disc = await this.fetchJSON("/api/discoveries?n=50");
-            if (!disc || disc.length === 0) { pane.innerHTML = "<p style='color:#8b949e;padding:12px;'>No discoveries.</p>"; return; }
-            let html = `<table class="analysis-table"><thead><tr><th>#</th><th>Disease 1</th><th>Disease 2</th><th>Score</th><th>Novel</th><th>Papers</th></tr></thead><tbody>`;
-            disc.forEach((d, i) => {
-                const e1 = d.entity1_name || d.entity1;
-                const e2 = d.entity2_name || d.entity2;
-                const score = (d.composite_score || 0).toFixed(3);
-                const papers = d.literature_evidence ?? -1;
-                const novel = papers === 0 ? "🔬 YES" : (papers > 0 ? "No" : "—");
-                html += `<tr><td>${i+1}</td><td>${e1}</td><td>${e2}</td><td>${score}</td><td>${novel}</td><td>${papers >= 0 ? papers : "—"}</td></tr>`;
-            });
-            html += `</tbody></table><button class="settings-btn" id="btn-download-csv" style="margin-top:8px;">⬇ Download as CSV</button>`;
-            pane.innerHTML = html;
-            pane.dataset.loaded = "true";
-            document.getElementById("btn-download-csv")?.addEventListener("click", () => this._downloadScoreCSV(disc));
-        }
-        else if (tabId === "single-disease") {
-            const diseases = this.data.diseases || [];
-            if (diseases.length === 0) { pane.innerHTML = "<p style='color:#8b949e;padding:12px;'>No diseases loaded.</p>"; return; }
-            let html = `<div style="padding:8px;"><select id="analysis-disease-select" class="analysis-select"><option value="">Select a disease...</option>`;
-            diseases.forEach(d => { html += `<option value="${d.id}">${d.name}</option>`; });
-            html += `</select><div id="analysis-disease-detail" style="margin-top:12px;"></div></div>`;
-            pane.innerHTML = html;
-            pane.dataset.loaded = "true";
-            document.getElementById("analysis-disease-select").addEventListener("change", async (e) => {
-                const id = e.target.value;
-                if (!id) return;
-                const detail = document.getElementById("analysis-disease-detail");
-                detail.innerHTML = "<p style='color:#8b949e;'>Loading...</p>";
-                const [info, disc] = await Promise.all([
-                    this.fetchJSON(`/api/disease/${id}`),
-                    this.fetchJSON(`/api/discoveries/${id}?n=10`),
-                ]);
-                let dh = "";
-                if (info) {
-                    dh += `<p><strong>Genes:</strong> ${info.genes?.map(g => g.name).join(", ") || "None"}</p>`;
-                    dh += `<p><strong>Symptoms:</strong> ${info.symptoms?.slice(0, 15).map(s => s.name).join(", ") || "None"}${info.symptoms?.length > 15 ? "..." : ""}</p>`;
-                    dh += `<p><strong>Known connections:</strong> ${info.connected_diseases?.map(c => c.name).join(", ") || "None"}</p>`;
-                }
-                if (disc && disc.length > 0) {
-                    dh += `<p style="margin-top:8px;"><strong>Predicted connections:</strong></p><ul>`;
-                    disc.forEach(d => {
-                        const other = d.entity1 === id ? (d.entity2_name || d.entity2) : (d.entity1_name || d.entity1);
-                        dh += `<li>${other} — score: ${(d.composite_score||0).toFixed(3)}</li>`;
-                    });
-                    dh += `</ul>`;
-                } else {
-                    dh += `<p style="color:#8b949e;">No predicted connections.</p>`;
-                }
-                detail.innerHTML = dh;
-            });
-        }
-        else if (tabId === "metric-summary") {
-            pane.innerHTML = "<p style='color:#8b949e;padding:12px;'>Loading...</p>";
-            const disc = await this.fetchJSON("/api/discoveries?n=100");
-            if (!disc || disc.length === 0) { pane.innerHTML = "<p style='color:#8b949e;padding:12px;'>No discoveries.</p>"; return; }
-            const metrics = {sds: [], hds: [], cis: [], crs: []};
-            disc.forEach(d => {
-                const comps = d.components || {};
-                const dominant = Object.keys(comps).reduce((a, b) => comps[a] > comps[b] ? a : b, "sds");
-                if (metrics[dominant]) metrics[dominant].push(d);
-            });
-            const labels = {sds: "SDS (Symmetry)", hds: "HDS (Harmony)", cis: "CIS (Triangles)", crs: "CRS (Curvature)"};
-            let html = `<div style="padding:8px;">`;
-            for (const [key, arr] of Object.entries(metrics)) {
-                const top = arr[0];
-                const topStr = top ? `${top.entity1_name || top.entity1} ↔ ${top.entity2_name || top.entity2}` : "None";
-                html += `<p><strong>${labels[key]}:</strong> found ${arr.length} primary signals. Top: ${topStr}</p>`;
-            }
-            const novelCount = disc.filter(d => d.literature_evidence === 0).length;
-            html += `<p style="margin-top:8px;"><strong>Novel (0 papers):</strong> ${novelCount} discoveries</p>`;
-            html += `</div>`;
-            pane.innerHTML = html;
-            pane.dataset.loaded = "true";
-        }
-    },
-
-    _downloadScoreCSV(discoveries) {
-        let csv = "Rank,Disease 1,Disease 2,Score,Novel,Papers,SDS,HDS,CIS,CRS\n";
-        discoveries.forEach((d, i) => {
-            const e1 = d.entity1_name || d.entity1;
-            const e2 = d.entity2_name || d.entity2;
-            const score = (d.composite_score || 0).toFixed(3);
-            const papers = d.literature_evidence ?? -1;
-            const novel = papers === 0 ? "YES" : "NO";
-            const c = d.components || {};
-            csv += `${i+1},"${e1}","${e2}",${score},${novel},${papers},${c.sds||0},${c.hds||0},${c.cis||0},${c.crs||0}\n`;
-        });
-        const blob = new Blob([csv], {type: "text/csv"});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url; a.download = "harmony_scores.csv"; a.click();
-        URL.revokeObjectURL(url);
     },
 
     // ── Zoom Helpers ──────────────────────────────────────────────────
@@ -1141,12 +1011,58 @@ const App = {
     },
 };
 
+// ── Report Functions (global, called from HTML) ───────────────────
+
+function downloadReport() {
+    window.open('/api/export-report', '_blank');
+}
+
+async function copyForAI() {
+    try {
+        const resp = await fetch('/api/export-report');
+        const text = await resp.text();
+        await navigator.clipboard.writeText(text);
+        alert('Copied! Paste into ChatGPT or Gemini.');
+    } catch (e) {
+        alert('Failed to copy: ' + e.message);
+    }
+}
+
+// ── Source Toggle (global) ─────────────────────────────────────────
+
+let apiEnabled = true;
+
+async function toggleSource() {
+    apiEnabled = !apiEnabled;
+    const knob = document.getElementById('toggleKnob');
+    const tog = document.getElementById('sourceToggle');
+    if (knob) knob.style.left = apiEnabled ? '20px' : '2px';
+    if (tog) tog.style.background = apiEnabled ? '#d4af37' : '#30363d';
+    await fetch('/api/toggle-source', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({use_api: apiEnabled})
+    });
+    location.reload();
+}
+
 // ── Bootstrap ──────────────────────────────────────────────────────
 
 document.addEventListener("DOMContentLoaded", () => {
     App.init();
     Chat.init();
     Settings.init();
+
+    // Check source status on load
+    fetch('/api/source-status').then(r => r.json()).then(d => {
+        apiEnabled = d.use_api;
+        const knob = document.getElementById('toggleKnob');
+        const tog = document.getElementById('sourceToggle');
+        const label = document.getElementById('source-label');
+        if (knob) knob.style.left = apiEnabled ? '20px' : '2px';
+        if (tog) tog.style.background = apiEnabled ? '#d4af37' : '#30363d';
+        if (label) label.textContent = apiEnabled ? 'API Data' : 'CSV Only';
+    });
     // Safety: hide loading screen after 20s no matter what
     setTimeout(() => {
         const loading = document.getElementById("loading");

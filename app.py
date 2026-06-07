@@ -21,6 +21,15 @@ import io
 import threading
 import requests as http_requests
 from datetime import datetime
+import psutil
+import networkx as nx
+
+# Lower process priority to protect laptop
+try:
+    p = psutil.Process(os.getpid())
+    p.nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
+except Exception:
+    pass
 
 from discovery import DiscoveryPipeline
 import rare_disease_kb as kb_module
@@ -34,9 +43,9 @@ SESSION_FILE = os.path.join(os.path.dirname(__file__), "cache", "session_data.js
 
 # ── Mode and limits ────────────────────────────────────────────────
 USE_API_DATA = True          # True = API mode, False = CSV-only mode
-MAX_DISEASES = 150           # Max diseases in memory
-MAX_CSV_DISEASES = 100       # Max diseases from a single CSV upload
-LITE_MODE = False            # If True, graph returns disease+predicted only
+MAX_DISEASES = 50            # Max diseases in memory (protect 8GB RAM)
+MAX_CSV_DISEASES = 40        # Max diseases from a single CSV upload
+LITE_MODE = True             # Always lite mode (disease nodes only)
 
 # Create backup of the original cache on first run (before any uploads)
 if os.path.exists(CACHE_FILE) and not os.path.exists(BACKUP_FILE):
@@ -957,34 +966,80 @@ def api_export_report():
     if not pipeline:
         return jsonify({"error": "No data loaded."}), 400
 
-    discoveries = pipeline.top_discoveries(50)
-    discoveries = _enrich_with_literature(discoveries, max_check=min(len(discoveries), 20))
+    # Get ALL discoveries
+    discoveries = pipeline.top_discoveries(200)
+    discoveries = _enrich_with_literature(discoveries, max_check=min(len(discoveries), 30))
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    mode = "API Data" if USE_API_DATA else "CSV Only"
     n_diseases = len(kb_module.DISEASES)
     n_genes = len(kb_module.GENES)
     n_symptoms = len(kb_module.SYMPTOMS)
     n_total = len(discoveries)
     n_novel = sum(1 for d in discoveries if d.get("literature_evidence", -1) == 0)
 
+    # Get disease subgraph for NetworkX metrics
+    G = None
+    try:
+        G = pipeline.kg.G
+    except Exception:
+        pass
+
+    # Metric counts
+    metric_counts = {"sds": 0, "hds": 0, "cis": 0, "crs": 0}
+    score_dist = {"high": 0, "medium": 0, "low": 0}
+    for d in discoveries:
+        comps = d.get("components", {})
+        if comps:
+            dominant = max(comps, key=comps.get)
+            if dominant in metric_counts:
+                metric_counts[dominant] += 1
+        s = d.get("composite_score", 0)
+        if s > 0.4:
+            score_dist["high"] += 1
+        elif s > 0.2:
+            score_dist["medium"] += 1
+        else:
+            score_dist["low"] += 1
+
     lines = []
     lines.append("=" * 56)
-    lines.append("THE HARMONY ENGINE — DISCOVERY REPORT")
+    lines.append("HARMONY_ENGINE_REPORT")
     lines.append("=" * 56)
-    lines.append(f"Generated: {now}")
-    lines.append(f"Mode: {mode}")
-    lines.append(f"Dataset: {n_diseases} diseases | {n_genes} genes | {n_symptoms} symptoms")
-    lines.append(f"Total predictions analyzed: {n_total}")
-    lines.append(f"Novel discoveries (0 papers found): {n_novel}")
+    lines.append(f"TS:{now}")
+    lines.append(f"DATASET: D={n_diseases} G={n_genes} S={n_symptoms}")
+    lines.append(f"TOTAL_PREDICTIONS:{n_total}")
+    lines.append(f"NOVEL_COUNT:{n_novel}")
+    lines.append("WEIGHTS: SDS=0.30 HDS=0.25 CIS=0.30 CRS=0.15")
     lines.append("=" * 56)
-    lines.append("")
-    lines.append("TOP DISCOVERIES:")
-    lines.append("-" * 56)
 
-    for i, d in enumerate(discoveries[:20]):
+    # DISEASE NODES
+    lines.append("DISEASE_NODES:")
+    for did, ddata in kb_module.DISEASES.items():
+        name = ddata.get("name", did)
+        cat = ddata.get("category", "")
+        gc = len(ddata.get("genes", []))
+        sc = len(ddata.get("symptoms", []))
+        lines.append(f"{did}|{name}|{cat}|{gc}|{sc}")
+    lines.append("=" * 56)
+
+    # KNOWN EDGES (disease-disease)
+    lines.append("EDGE_LIST (known connections):")
+    if G:
+        for u, v, edata in G.edges(data=True):
+            n1 = G.nodes[u].get("type", "")
+            n2 = G.nodes[v].get("type", "")
+            if n1 == "disease" and n2 == "disease":
+                w = edata.get("weight", 0.0)
+                lines.append(f"{u}|{v}|{w:.4f}")
+    lines.append("=" * 56)
+
+    # DISCOVERIES
+    lines.append("DISCOVERIES:")
+    for i, d in enumerate(discoveries):
         e1 = d.get("entity1_name", d["entity1"])
         e2 = d.get("entity2_name", d["entity2"])
+        did1 = d.get("entity1", "")
+        did2 = d.get("entity2", "")
         score = d.get("composite_score", 0)
         papers = d.get("literature_evidence", -1)
         novel = "YES" if papers == 0 else "NO"
@@ -994,43 +1049,83 @@ def api_export_report():
         cis = comps.get("cis", 0)
         crs = comps.get("crs", 0)
 
-        # Get explanation
-        explanation = pipeline.explain_discovery(d)
-        story = explanation.get("story", "No explanation available.")
+        # Primary signal
+        metric_names = {"sds": "SDS", "hds": "HDS", "cis": "CIS", "crs": "CRS"}
+        primary = metric_names.get(max(comps, key=comps.get), "?") if comps else "?"
 
-        lines.append(f"#{i+1}. {e1} <-> {e2}")
-        lines.append(f"Composite Score: {score:.3f}")
-        lines.append(f"Novel: {novel} ({papers} papers in PubMed)" if papers >= 0 else f"Novel: {novel}")
-        lines.append(f"Metrics: SDS={sds:.2f} | HDS={hds:.2f} | CIS={cis:.2f} | CRS={crs:.2f}")
-        lines.append(f"Explanation: {story}")
-        lines.append("-" * 56)
+        # Gene/symptom overlap
+        d1_data = kb_module.DISEASES.get(did1, {})
+        d2_data = kb_module.DISEASES.get(did2, {})
+        shared_genes = set(d1_data.get("genes", [])) & set(d2_data.get("genes", []))
+        shared_symptoms = set(d1_data.get("symptoms", [])) & set(d2_data.get("symptoms", []))
+        gene_names = [kb_module.GENES.get(g, g) for g in shared_genes]
+        symptom_names = [kb_module.SYMPTOMS.get(s, s) for s in shared_symptoms][:5]
+        gene_jaccard = len(shared_genes) / len(set(d1_data.get("genes", [])) | set(d2_data.get("genes", []))) if (set(d1_data.get("genes", [])) | set(d2_data.get("genes", []))) else 0.0
 
-    lines.append("")
+        # NetworkX metrics
+        common_n = 0
+        aa = 0.0
+        ra = 0.0
+        if G and G.has_node(did1) and G.has_node(did2):
+            try:
+                common_n = len(list(nx.common_neighbors(G, did1, did2)))
+            except Exception:
+                common_n = 0
+            try:
+                aa = next(nx.adamic_adar_index(G, [(did1, did2)]))[2]
+            except Exception:
+                aa = 0.0
+            try:
+                ra = next(nx.resource_allocation_index(G, [(did1, did2)]))[2]
+            except Exception:
+                ra = 0.0
+
+        lines.append(f"RANK:{i+1}|SCORE:{score:.4f}|NOVEL:{novel}|PAPERS:{papers}")
+        lines.append(f"D1:{e1}")
+        lines.append(f"D2:{e2}")
+        lines.append(f"SDS:{sds:.4f}|HDS:{hds:.4f}|CIS:{cis:.4f}|CRS:{crs:.4f}")
+        lines.append(f"GENE_JACCARD:{gene_jaccard:.4f}|COMMON_N:{common_n}")
+        lines.append(f"ADAMIC_ADAR:{aa:.4f}|RESOURCE_ALLOC:{ra:.4f}")
+        lines.append(f"SHARED_GENES:{','.join(gene_names) if gene_names else 'NONE'}")
+        lines.append(f"SHARED_SYMPTOMS:{','.join(symptom_names) if symptom_names else 'NONE'}")
+        lines.append(f"PRIMARY_SIGNAL:{primary}")
+
+        # Shortest path for NOVEL discoveries only
+        if novel == "YES" and G and G.has_node(did1) and G.has_node(did2):
+            try:
+                path = nx.shortest_path(G, did1, did2)
+                path_len = len(path) - 1
+                path_names = []
+                for p in path[:4]:
+                    pname = G.nodes[p].get("name", p)
+                    path_names.append(pname)
+                lines.append(f"PATH_LENGTH:{path_len}|PATH:{' -> '.join(path_names)}")
+            except Exception:
+                lines.append("PATH_LENGTH:DISCONNECTED|PATH:NONE")
+
+        lines.append("---")
+
     lines.append("=" * 56)
-    lines.append("FOR AI ANALYSIS — PASTE INTO CHATGPT OR GEMINI:")
+
+    # SCORE DISTRIBUTION
+    lines.append("SCORE_DISTRIBUTION:")
+    lines.append(f"HIGH(>0.4):{score_dist['high']}|MED(0.2-0.4):{score_dist['medium']}|LOW(<0.2):{score_dist['low']}")
+    lines.append(f"SDS_PRIMARY:{metric_counts['sds']}|HDS_PRIMARY:{metric_counts['hds']}")
+    lines.append(f"CIS_PRIMARY:{metric_counts['cis']}|CRS_PRIMARY:{metric_counts['crs']}")
     lines.append("=" * 56)
-    lines.append(f"I have analyzed a medical knowledge graph of {n_diseases} rare diseases")
-    lines.append("using structural harmony mathematics. Here are the top hidden")
-    lines.append("connections found where the graph symmetry breaks down:")
-    lines.append("")
 
-    for i, d in enumerate(discoveries[:10]):
-        e1 = d.get("entity1_name", d["entity1"])
-        e2 = d.get("entity2_name", d["entity2"])
-        score = d.get("composite_score", 0)
-        papers = d.get("literature_evidence", -1)
-        novel = "yes" if papers == 0 else "no"
-        lines.append(f"  {i+1}. {e1} <-> {e2} (score: {score:.3f}, novel: {novel})")
-
-    lines.append("")
-    lines.append("These connections were found by measuring:")
-    lines.append("- Symmetry Defect (do similar genes lead to similar symptoms?)")
-    lines.append("- Harmonic Dissonance (does graph structure predict this connection?)")
-    lines.append("- Compositional Incompleteness (missing triangles in the network?)")
-    lines.append("- Curvature Defect (wrong geometry in this region of the graph?)")
-    lines.append("")
-    lines.append("Please analyze: which of these predicted connections are most")
-    lines.append("biologically plausible, and what experiments could test them?")
+    # AI PROMPT
+    lines.append("AI_PROMPT:")
+    lines.append("You are a biomedical researcher. Below is a rare disease")
+    lines.append("knowledge graph analysis using structural harmony mathematics")
+    lines.append("(SDS=genetic/phenotypic symmetry break, HDS=spectral dissonance,")
+    lines.append("CIS=incomplete network triangles, CRS=Ricci curvature defect,")
+    lines.append("ADAMIC_ADAR and RESOURCE_ALLOC=link prediction confidence).")
+    lines.append(f"Dataset: {n_diseases} diseases, {n_genes} genes, {n_symptoms} symptoms.")
+    lines.append("Task: For each NOVEL discovery, assess biological plausibility,")
+    lines.append("identify the most likely shared molecular mechanism,")
+    lines.append("and suggest one specific testable experiment.")
+    lines.append("Prioritize entries where GENE_JACCARD>0 and COMMON_N>0.")
     lines.append("=" * 56)
 
     report_text = "\n".join(lines)
