@@ -1,0 +1,6 @@
+Flask
+gunicorn
+networkx
+numpy
+scipy
+requests
