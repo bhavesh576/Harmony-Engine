@@ -301,7 +301,15 @@ const App = {
 
         // Filter edges for performance — keep disease-disease and predicted
         const visibleEdges = data.edges.filter(e =>
-            e.type === "similar" || e.type === "co_occurs" || e.type === "interacts"
+            [
+               "similar",
+               "presents",
+               "linked_gene",
+               "participates",
+               "in_pathway",
+               "co_occurs",
+               "interacts"
+            ].includes(e.type)
         );
 
         // Add predicted edges
