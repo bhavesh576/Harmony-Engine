@@ -45,7 +45,7 @@ SESSION_FILE = os.path.join(os.path.dirname(__file__), "cache", "session_data.js
 USE_API_DATA = True          # True = API mode, False = CSV-only mode
 MAX_DISEASES = 50            # Max diseases in memory (protect 8GB RAM)
 MAX_CSV_DISEASES = 40        # Max diseases from a single CSV upload
-LITE_MODE = False             # Always lite mode (disease nodes only)
+LITE_MODE = True            # Always lite mode (disease nodes only)
 
 # Create backup of the original cache on first run (before any uploads)
 if os.path.exists(CACHE_FILE) and not os.path.exists(BACKUP_FILE):
